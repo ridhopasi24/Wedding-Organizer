@@ -1,0 +1,1556 @@
+```jsx
+import { useState, useEffect } from "react";
+import { 
+  Calendar, 
+  Heart, 
+  Users, 
+  Sparkles, 
+  Star, 
+  Gift, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Instagram,
+  Facebook,
+  Twitter,
+  ChevronRight,
+  ChevronLeft,
+  Clock,
+  Check,
+  MessageCircle,
+  GalleryHorizontal,
+  Video,
+  FileText,
+  Search,
+  Filter,
+  X,
+  Plus,
+  Minus,
+  ShoppingCart,
+  User,
+  ArrowRight,
+  TrendingUp,
+  Target,
+  Award,
+  Briefcase,
+  Image,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Share2,
+  Download
+} from "lucide-react";
+
+const App = () => {
+  const [activeSection, setActiveSection] = useState('home');
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [selectedGallery, setSelectedGallery] = useState(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    eventDate: '',
+    guests: '',
+    budget: '',
+    theme: '',
+    message: ''
+  });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Hero slides
+  const heroSlides = [
+    {
+      image: "https://placehold.co/1920x1080/f87171/ffffff?text=Romantic+Wedding",
+      title: "Mewujudkan Pernikahan Impian Anda",
+      subtitle: "Dengan sentuhan personal dan detail sempurna"
+    },
+    {
+      image: "https://placehold.co/1920x1080/ec4899/ffffff?text=Elegant+Ballroom",
+      title: "Acara Mewah yang Tak Terlupakan",
+      subtitle: "Konsep premium untuk momen spesial Anda"
+    },
+    {
+      image: "https://placehold.co/1920x1080/a855f7/ffffff?text=Beach+Wedding",
+      title: "Pernikahan di Pantai yang Romantis",
+      subtitle: "Gabungkan cinta dan keindahan alam"
+    }
+  ];
+
+  // Services data
+  const services = [
+    {
+      id: 1,
+      title: "Full Wedding Planning",
+      description: "Perencanaan lengkap dari awal hingga akhir dengan pendekatan personal dan detail sempurna.",
+      price: 50000000,
+      priceDisplay: "Rp 50.000.000",
+      category: "full",
+      features: [
+        "Konsep & Tema Kustom",
+        "Pemilihan & Manajemen Vendor",
+        "Timeline Event Detail",
+        "Budgeting & Financial Planning",
+        "Koordinasi Persiapan",
+        "Koordinasi Hari H",
+        "Vendor Backup",
+        "Emergency Management"
+      ],
+      benefits: [
+        "Hemat waktu hingga 80%",
+        "Akses ke vendor premium",
+        "Garansi kepuasan",
+        "Free consultation 3x"
+      ],
+      image: "https://placehold.co/600x400/f87171/ffffff?text=Full+Planning"
+    },
+    {
+      id: 2,
+      title: "Partial Planning",
+      description: "Bantuan dalam perencanaan beberapa aspek pernikahan dengan fleksibilitas tinggi.",
+      price: 25000000,
+      priceDisplay: "Rp 25.000.000",
+      category: "partial",
+      features: [
+        "Pemilihan Vendor Terpercaya",
+        "Manajemen Timeline",
+        "Konsultasi Konsep",
+        "Koordinasi Persiapan",
+        "Budgeting Guidance",
+        "Vendor Recommendations"
+      ],
+      benefits: [
+        "Fleksibel sesuai kebutuhan",
+        "Biaya terjangkau",
+        "Expert guidance",
+        "Time saving"
+      ],
+      image: "https://placehold.co/600x400/ec4899/ffffff?text=Partial+Planning"
+    },
+    {
+      id: 3,
+      title: "Day-of Coordination",
+      description: "Koordinasi penuh pada hari pernikahan untuk memastikan semuanya berjalan sempurna.",
+      price: 15000000,
+      priceDisplay: "Rp 15.000.000",
+      category: "dayof",
+      features: [
+        "Koordinasi Vendor",
+        "Management Timeline",
+        "Problem Solving",
+        "Briefing Tim",
+        "Emergency Handling",
+        "Final Checks"
+      ],
+      benefits: [
+        "Stress-free wedding day",
+        "Professional coordination",
+        "Quick response",
+        "Peace of mind"
+      ],
+      image: "https://placehold.co/600x400/a855f7/ffffff?text=Day+of+Coordination"
+    },
+    {
+      id: 4,
+      title: "Vendor Management",
+      description: "Pengelolaan vendor profesional untuk memastikan kualitas dan kinerja terbaik.",
+      price: 20000000,
+      priceDisplay: "Rp 20.000.000",
+      category: "vendor",
+      features: [
+        "Vendor Selection",
+        "Contract Negotiation",
+        "Performance Monitoring",
+        "Quality Control",
+        "Payment Scheduling",
+        "Backup Vendors"
+      ],
+      benefits: [
+        "Best value for money",
+        "Quality assurance",
+        "Risk management",
+        "Seamless coordination"
+      ],
+      image: "https://placehold.co/600x400/8b5cf6/ffffff?text=Vendor+Management"
+    }
+  ];
+
+  // Portfolio data
+  const portfolio = [
+    {
+      id: 1,
+      title: "Garden Wedding",
+      location: "Ubud, Bali",
+      category: "garden",
+      date: "2024-03-15",
+      guests: 150,
+      budget: "Rp 300.000.000",
+      description: "Pernikahan taman dengan dekorasi bunga alami dan suasana romantis.",
+      images: [
+        "https://placehold.co/800x600/f87171/ffffff?text=Garden+1",
+        "https://placehold.co/800x600/ec4899/ffffff?text=Garden+2",
+        "https://placehold.co/800x600/a855f7/ffffff?text=Garden+3"
+      ],
+      video: "https://placehold.co/800x600/8b5cf6/ffffff?text=Video+Garden",
+      rating: 5,
+      highlights: ["Natural Flowers", "Outdoor Ceremony", "Romantic Lighting", "Eco-friendly"]
+    },
+    {
+      id: 2,
+      title: "Beach Ceremony",
+      location: "Nusa Dua, Bali",
+      category: "beach",
+      date: "2024-02-20",
+      guests: 200,
+      budget: "Rp 450.000.000",
+      description: "Upacara pernikahan di pantai dengan dekorasi tropis dan suasana santai.",
+      images: [
+        "https://placehold.co/800x600/10b981/ffffff?text=Beach+1",
+        "https://placehold.co/800x600/f59e0b/ffffff?text=Beach+2",
+        "https://placehold.co/800x600/ef4444/ffffff?text=Beach+3"
+      ],
+      video: "https://placehold.co/800x600/8b5cf6/ffffff?text=Video+Beach",
+      rating: 5,
+      highlights: ["Ocean View", "Tropical Decor", "Sunset Ceremony", "Beach Reception"]
+    },
+    {
+      id: 3,
+      title: "Luxury Ballroom",
+      location: "Grand Hyatt, Jakarta",
+      category: "luxury",
+      date: "2024-01-10",
+      guests: 300,
+      budget: "Rp 800.000.000",
+      description: "Acara mewah di ballroom dengan dekorasi elegan dan pencahayaan dramatis.",
+      images: [
+        "https://placehold.co/800x600/6366f1/ffffff?text=Luxury+1",
+        "https://placehold.co/800x600/8b5cf6/ffffff?text=Luxury+2",
+        "https://placehold.co/800x600/a855f7/ffffff?text=Luxury+3"
+      ],
+      video: "https://placehold.co/800x600/8b5cf6/ffffff?text=Video+Luxury",
+      rating: 5,
+      highlights: ["Crystal Chandeliers", "Red Carpet", "Live Orchestra", "VIP Lounge"]
+    },
+    {
+      id: 4,
+      title: "Rustic Chic",
+      location: "Canggu, Bali",
+      category: "rustic",
+      date: "2023-12-05",
+      guests: 120,
+      budget: "Rp 250.000.000",
+      description: "Konsep rustic chic dengan elemen kayu alami dan suasana hangat.",
+      images: [
+        "https://placehold.co/800x600/059669/ffffff?text=Rustic+1",
+        "https://placehold.co/800x600/16a34a/ffffff?text=Rustic+2",
+        "https://placehold.co/800x600/22c55e/ffffff?text=Rustic+3"
+      ],
+      video: "https://placehold.co/800x600/8b5cf6/ffffff?text=Video+Rustic",
+      rating: 4,
+      highlights: ["Wooden Decor", "Farm-to-Table", "Outdoor Lounge", "Boho Style"]
+    },
+    {
+      id: 5,
+      title: "Traditional Javanese",
+      location: "Yogyakarta",
+      category: "traditional",
+      date: "2023-11-18",
+      guests: 250,
+      budget: "Rp 350.000.000",
+      description: "Pernikahan adat Jawa dengan upacara lengkap dan dekorasi tradisional.",
+      images: [
+        "https://placehold.co/800x600/dc2626/ffffff?text=Javanese+1",
+        "https://placehold.co/800x600/ea580c/ffffff?text=Javanese+2",
+        "https://placehold.co/800x600/f97316/ffffff?text=Javanese+3"
+      ],
+      video: "https://placehold.co/800x600/8b5cf6/ffffff?text=Video+Javanese",
+      rating: 5,
+      highlights: ["Adat Ceremony", "Traditional Attire", "Javanese Gamelan", "Cultural Elements"]
+    },
+    {
+      id: 6,
+      title: "Minimalist Elegance",
+      location: "Seminyak, Bali",
+      category: "minimalist",
+      date: "2023-10-22",
+      guests: 80,
+      budget: "Rp 180.000.000",
+      description: "Konsep minimalis elegan dengan fokus pada kesederhanaan dan keanggunan.",
+      images: [
+        "https://placehold.co/800x600/1f2937/ffffff?text=Minimalist+1",
+        "https://placehold.co/800x600/374151/ffffff?text=Minimalist+2",
+        "https://placehold.co/800x600/4b5563/ffffff?text=Minimalist+3"
+      ],
+      video: "https://placehold.co/800x600/8b5cf6/ffffff?text=Video+Minimalist",
+      rating: 4,
+      highlights: ["Clean Lines", "Neutral Palette", "Modern Design", "Intimate Setting"]
+    }
+  ];
+
+  // Testimonials
+  const testimonials = [
+    {
+      id: 1,
+      name: "Siti & Andi",
+      location: "Jakarta",
+      text: "Hapsah Wedding Organizer benar-benar luar biasa! Pernikahan kami menjadi mimpi yang menjadi kenyataan. Setiap detail sempurna! Tim mereka sangat profesional dan responsif terhadap semua permintaan kami. Kami menerima pujian dari semua tamu tentang keindahan acara kami.",
+      rating: 5,
+      image: "https://placehold.co/100x100/f87171/ffffff?text=S",
+      date: "2024-03-15",
+      featured: true
+    },
+    {
+      id: 2,
+      name: "Dewi & Budi",
+      location: "Bandung",
+      text: "Tim profesional yang sangat perhatian terhadap detail. Mereka membuat proses perencanaan menjadi menyenangkan dan tanpa stres. Dari pemilihan vendor hingga koordinasi hari H, semuanya berjalan lancar. Kami bisa fokus menikmati momen spesial kami tanpa khawatir tentang hal-hal teknis.",
+      rating: 5,
+      image: "https://placehold.co/100x100/ec4899/ffffff?text=D",
+      date: "2024-02-20",
+      featured: true
+    },
+    {
+      id: 3,
+      name: "Rina & Joko",
+      location: "Surabaya",
+      text: "Dari konsep hingga eksekusi, semuanya sempurna. Kami menerima pujian dari semua tamu tentang keindahan acara kami. Yang paling mengesankan adalah bagaimana tim Hapsah bisa mengatasi masalah teknis di menit-menit terakhir dengan sangat profesional tanpa membuat kami stres.",
+      rating: 5,
+      image: "https://placehold.co/100x100/a855f7/ffffff?text=R",
+      date: "2024-01-10",
+      featured: true
+    },
+    {
+      id: 4,
+      name: "Lina & Arif",
+      location: "Bali",
+      text: "Kami memilih paket partial planning dan sangat puas dengan hasilnya. Tim Hapsah memberikan saran-saran yang sangat berharga dalam memilih vendor dan mengatur budget. Mereka benar-benar membantu kami menghemat biaya tanpa mengorbankan kualitas.",
+      rating: 4,
+      image: "https://placehold.co/100x100/8b5cf6/ffffff?text=L",
+      date: "2023-12-05"
+    },
+    {
+      id: 5,
+      name: "Maya & Rizal",
+      location: "Yogyakarta",
+      text: "Untuk pernikahan adat Jawa kami, Hapsah Wedding Organizer sangat memahami budaya dan tradisi yang harus dijaga. Mereka berhasil menggabungkan elemen tradisional dengan sentuhan modern yang elegan. Keluarga besar kami sangat terkesan dengan profesionalisme tim.",
+      rating: 5,
+      image: "https://placehold.co/100x100/10b981/ffffff?text=M",
+      date: "2023-11-18"
+    },
+    {
+      id: 6,
+      name: "Nina & Adi",
+      location: "Semarang",
+      text: "Pengalaman kami dengan Hapsah Wedding Organizer benar-benar luar biasa. Mereka tidak hanya merencanakan acara kami, tetapi juga menjadi teman yang mendukung selama proses persiapan. Komunikasi mereka sangat baik dan responsif terhadap semua pertanyaan kami.",
+      rating: 5,
+      image: "https://placehold.co/100x100/f59e0b/ffffff?text=N",
+      date: "2023-10-22"
+    }
+  ];
+
+  // Pricing packages
+  const pricingPackages = [
+    {
+      name: "Silver",
+      price: 35000000,
+      priceDisplay: "Rp 35.000.000",
+      period: "per event",
+      features: [
+        "Basic Wedding Planning",
+        "Vendor Recommendations",
+        "Timeline Management",
+        "Budget Guidance",
+        "Day-of Coordination (4 hours)",
+        "Guest List Management"
+      ],
+      popular: false
+    },
+    {
+      name: "Gold",
+      price: 65000000,
+      priceDisplay: "Rp 65.000.000",
+      period: "per event",
+      features: [
+        "Comprehensive Wedding Planning",
+        "Full Vendor Management",
+        "Detailed Timeline",
+        "Budget Planning & Tracking",
+        "Full Day Coordination",
+        "Guest List & RSVP Management",
+        "Decor & Theme Design",
+        "Wedding Stationery Design"
+      ],
+      popular: true
+    },
+    {
+      name: "Platinum",
+      price: 120000000,
+      priceDisplay: "Rp 120.000.000",
+      period: "per event",
+      features: [
+        "Premium Wedding Planning",
+        "Exclusive Vendor Access",
+        "Custom Timeline & Schedule",
+        "Advanced Budget Management",
+        "24/7 Support",
+        "Full Coordination Team",
+        "Luxury Decor & Design",
+        "Custom Wedding Stationery",
+        "Entertainment Planning",
+        "Honeymoon Planning",
+        "Post-Wedding Services"
+      ],
+      popular: false
+    }
+  ];
+
+  // Gallery categories
+  const galleryCategories = [
+    { id: 'all', name: 'Semua', icon: GalleryHorizontal },
+    { id: 'garden', name: 'Taman', icon: Image },
+    { id: 'beach', name: 'Pantai', icon: Image },
+    { id: 'luxury', name: 'Mewah', icon: Image },
+    { id: 'rustic', name: 'Rustic', icon: Image },
+    { id: 'traditional', name: 'Tradisional', icon: Image },
+    { id: 'minimalist', name: 'Minimalis', icon: Image },
+    { id: 'videos', name: 'Video', icon: Video }
+  ];
+
+  // Stats
+  const stats = [
+    { number: "500+", label: "Pernikahan Sukses", icon: Heart },
+    { number: "10+", label: "Tahun Pengalaman", icon: Clock },
+    { number: "98%", label: "Kepuasan Klien", icon: Star },
+    { number: "25+", label: "Vendor Terpercaya", icon: Users },
+    { number: "150+", label: "Event Tahunan", icon: Calendar },
+    { number: "50+", label: "Tim Profesional", icon: Briefcase }
+  ];
+
+  // Features
+  const features = [
+    {
+      icon: Target,
+      title: "Perencanaan Personal",
+      description: "Setiap pernikahan dirancang sesuai dengan kepribadian dan impian pasangan."
+    },
+    {
+      icon: Award,
+      title: "Kualitas Premium",
+      description: "Kami bekerja sama dengan vendor terbaik untuk memastikan kualitas terbaik."
+    },
+    {
+      icon: TrendingUp,
+      title: "Inovasi Terus Menerus",
+      description: "Kami selalu mengikuti tren terbaru dalam dunia pernikahan."
+    },
+    {
+      icon: Briefcase,
+      title: "Profesional Berpengalaman",
+      description: "Tim kami terdiri dari profesional berpengalaman di bidangnya."
+    }
+  ];
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setLoading(false);
+    setShowSuccessModal(true);
+    
+    // Reset form
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      eventDate: '',
+      guests: '',
+      budget: '',
+      theme: '',
+      message: ''
+    });
+  };
+
+  // Handle add to cart
+  const addToCart = (service) => {
+    setCart(prev => [...prev, { ...service, quantity: 1 }]);
+  };
+
+  // Handle remove from cart
+  const removeFromCart = (serviceId) => {
+    setCart(prev => prev.filter(item => item.id !== serviceId));
+  };
+
+  // Handle quantity change
+  const updateQuantity = (serviceId, quantity) => {
+    setCart(prev => prev.map(item => 
+      item.id === serviceId ? { ...item, quantity: Math.max(1, quantity) } : item
+    ));
+  };
+
+  // Calculate cart total
+  const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+  // Auto-advance hero slides
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Filter portfolio based on search and category
+  const filteredPortfolio = portfolio.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         item.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = filterCategory === 'all' || item.category === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  // Get featured testimonials
+  const featuredTestimonials = testimonials.filter(t => t.featured);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-3">
+              <div className="text-rose-600">
+                <Heart className="h-8 w-8" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">Hapsah</h1>
+                <p className="text-sm text-gray-600">Wedding Organizer</p>
+              </div>
+            </div>
+            
+            <nav className="hidden md:flex space-x-8">
+              <a 
+                href="#home" 
+                onClick={() => setActiveSection('home')}
+                className={`text-sm font-medium transition-colors ${
+                  activeSection === 'home' ? 'text-rose-600' : 'text-gray-700 hover:text-rose-600'
+                }`}
+              >
+                Beranda
+              </a>
+              <a 
+                href="#services" 
+                onClick={() => setActiveSection('services')}
+                className={`text-sm font-medium transition-colors ${
+                  activeSection === 'services' ? 'text-rose-600' : 'text-gray-700 hover:text-rose-600'
+                }`}
+              >
+                Layanan
+              </a>
+              <a 
+                href="#portfolio" 
+                onClick={() => setActiveSection('portfolio')}
+                className={`text-sm font-medium transition-colors ${
+                  activeSection === 'portfolio' ? 'text-rose-600' : 'text-gray-700 hover:text-rose-600'
+                }`}
+              >
+                Portfolio
+              </a>
+              <a 
+                href="#pricing" 
+                onClick={() => setActiveSection('pricing')}
+                className={`text-sm font-medium transition-colors ${
+                  activeSection === 'pricing' ? 'text-rose-600' : 'text-gray-700 hover:text-rose-600'
+                }`}
+              >
+                Harga
+              </a>
+              <a 
+                href="#testimonials" 
+                onClick={() => setActiveSection('testimonials')}
+                className={`text-sm font-medium transition-colors ${
+                  activeSection === 'testimonials' ? 'text-rose-600' : 'text-gray-700 hover:text-rose-600'
+                }`}
+              >
+                Testimoni
+              </a>
+              <a 
+                href="#contact" 
+                onClick={() => setActiveSection('contact')}
+                className={`text-sm font-medium transition-colors ${
+                  activeSection === 'contact' ? 'text-rose-600' : 'text-gray-700 hover:text-rose-600'
+                }`}
+              >
+                Kontak
+              </a>
+            </nav>
+            
+            <div className="flex items-center space-x-4">
+              <button 
+                onClick={() => setShowCart(!showCart)}
+                className="relative text-gray-700 hover:text-rose-600 transition-colors"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-rose-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cart.length}
+                  </span>
+                )}
+              </button>
+              
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="md:hidden text-gray-700"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          {/* Mobile menu */}
+          {isMenuOpen && (
+            <div className="md:hidden bg-white border-t border-gray-200">
+              <div className="px-4 py-2 space-y-2">
+                <a href="#home" className="block py-2 text-gray-700 hover:text-rose-600">Beranda</a>
+                <a href="#services" className="block py-2 text-gray-700 hover:text-rose-600">Layanan</a>
+                <a href="#portfolio" className="block py-2 text-gray-700 hover:text-rose-600">Portfolio</a>
+                <a href="#pricing" className="block py-2 text-gray-700 hover:text-rose-600">Harga</a>
+                <a href="#testimonials" className="block py-2 text-gray-700 hover:text-rose-600">Testimoni</a>
+                <a href="#contact" className="block py-2 text-gray-700 hover:text-rose-600">Kontak</a>
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Cart Sidebar */}
+      {showCart && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowCart(false)}></div>
+          <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
+            <div className="flex flex-col h-full">
+              <div className="flex items-center justify-between p-6 border-b">
+                <h2 className="text-xl font-bold text-gray-800">Keranjang Anda</h2>
+                <button 
+                  onClick={() => setShowCart(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-6">
+                {cart.length === 0 ? (
+                  <div className="text-center py-12">
+                    <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">Keranjang Anda kosong</p>
+                    <button 
+                      onClick={() => setShowCart(false)}
+                      className="mt-4 bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 rounded-full font-semibold"
+                    >
+                      Lanjutkan Belanja
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cart.map(item => (
+                      <div key={item.id} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-semibold text-gray-800">{item.title}</h3>
+                          <button 
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-gray-400 hover:text-red-500"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <p className="text-rose-600 font-semibold mb-2">{item.priceDisplay}</p>
+                        <div className="flex items-center space-x-2">
+                          <button 
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="bg-gray-200 hover:bg-gray-300 p-1 rounded"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </button>
+                          <span className="text-sm font-medium">{item.quantity}</span>
+                          <button 
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            className="bg-gray-200 hover:bg-gray-300 p-1 rounded"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {cart.length > 0 && (
+                <div className="border-t p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-lg font-semibold">Total:</span>
+                    <span className="text-2xl font-bold text-rose-600">
+                      Rp {cartTotal.toLocaleString()}
+                    </span>
+                  </div>
+                  <button className="w-full bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-full font-semibold transition-colors">
+                    Checkout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hero Section */}
+      <section id="home" className="relative h-screen overflow-hidden">
+        <div className="absolute inset-0">
+          {heroSlides.map((slide, index) => (
+            <div 
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <img 
+                src={slide.image} 
+                alt={slide.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="relative z-10 h-full flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div className="text-center text-white">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                {heroSlides[currentSlide].title}
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                {heroSlides[currentSlide].subtitle}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button className="bg-rose-600 hover:bg-rose-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                  Konsultasi Gratis
+                </button>
+                <button className="border-2 border-white text-white hover:bg-white hover:text-gray-800 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300">
+                  Lihat Portfolio
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Slide indicators */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50'
+              }`}
+            ></button>
+          ))}
+        </div>
+        
+        {/* Navigation arrows */}
+        <button 
+          onClick={() => setCurrentSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1))}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <button 
+          onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-70 transition-all"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-rose-600 mb-2">{stat.number}</div>
+                <div className="flex items-center justify-center text-gray-600 mb-2">
+                  <stat.icon className="h-5 w-5 mr-2" />
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-gradient-to-br from-rose-50 to-pink-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Mengapa Memilih Hapsah?</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Kami menawarkan layanan wedding organizer terbaik dengan pendekatan personal dan profesional.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-shadow duration-300">
+                <div className="bg-rose-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-rose-600">
+                  <feature.icon className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="services" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Layanan Kami</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Kami menawarkan berbagai paket layanan yang dapat disesuaikan dengan kebutuhan dan anggaran Anda.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {services.map((service) => (
+              <div 
+                key={service.id}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl"
+              >
+                <div className="md:flex">
+                  <div className="md:w-1/2">
+                    <img 
+                      src={service.image} 
+                      alt={service.title}
+                      className="w-full h-64 md:h-full object-cover"
+                    />
+                  </div>
+                  <div className="md:w-1/2 p-8">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4">{service.title}</h3>
+                    <p className="text-gray-600 mb-6">{service.description}</p>
+                    <div className="text-3xl font-bold text-rose-600 mb-6">{service.priceDisplay}</div>
+                    
+                    <div className="space-y-3 mb-6">
+                      {service.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-center text-gray-600">
+                          <Check className="h-5 w-5 text-rose-600 mr-3 flex-shrink-0" />
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="flex space-x-4">
+                      <button 
+                        onClick={() => addToCart(service)}
+                        className="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-full font-semibold transition-colors"
+                      >
+                        Tambah ke Keranjang
+                      </button>
+                      <button 
+                        onClick={() => setSelectedService(service)}
+                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-full font-semibold transition-colors"
+                      >
+                        Detail
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center">
+            <button className="bg-rose-600 hover:bg-rose-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+              Lihat Semua Layanan
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 bg-gradient-to-br from-pink-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Paket Harga</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Pilih paket yang sesuai dengan kebutuhan dan anggaran pernikahan Anda.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {pricingPackages.map((pkg) => (
+              <div 
+                key={pkg.name}
+                className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 ${
+                  pkg.popular ? 'ring-4 ring-rose-300 transform scale-105' : 'hover:shadow-2xl'
+                }`}
+              >
+                {pkg.popular && (
+                  <div className="bg-rose-600 text-white text-center py-2 text-sm font-semibold">
+                    Paling Populer
+                  </div>
+                )}
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">{pkg.name}</h3>
+                  <div className="text-4xl font-bold text-rose-600 mb-2">{pkg.priceDisplay}</div>
+                  <div className="text-gray-600 mb-6">{pkg.period}</div>
+                  
+                  <ul className="space-y-4 mb-8">
+                    {pkg.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center text-gray-600">
+                        <Check className="h-5 w-5 text-rose-600 mr-3 flex-shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <button className={`w-full py-3 rounded-full font-semibold transition-colors ${
+                    pkg.popular 
+                      ? 'bg-rose-600 hover:bg-rose-700 text-white' 
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                  }`}>
+                    Pilih Paket
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Portfolio Section */}
+      <section id="portfolio" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Portfolio Kami</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
+              Lihat beberapa karya terbaik kami yang telah mewujudkan impian pernikahan pasangan-pasangan bahagia.
+            </p>
+            
+            {/* Search and Filter */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-2xl mx-auto">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <input
+                  type="text"
+                  placeholder="Cari portfolio..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex space-x-2 overflow-x-auto pb-2">
+                {galleryCategories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setFilterCategory(category.id)}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                      filterCategory === category.id
+                        ? 'bg-rose-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    <category.icon className="h-4 w-4" />
+                    <span>{category.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Portfolio Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredPortfolio.map((item) => (
+              <div key={item.id} className="group relative overflow-hidden rounded-2xl shadow-lg">
+                <img 
+                  src={item.images[0]} 
+                  alt={item.title}
+                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                  <div className="p-6 text-white">
+                    <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                    <p className="flex items-center text-sm mb-2">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      {item.location}
+                    </p>
+                    <div className="flex items-center space-x-4 text-sm">
+                      <span>{item.guests} Tamu</span>
+                      <span>•</span>
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`h-4 w-4 ${i < item.rating ? 'text-yellow-400 fill-current' : 'text-gray-400'}`} 
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <button 
+                    onClick={() => setSelectedGallery(item)}
+                    className="bg-white bg-opacity-90 text-gray-800 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                  >
+                    <GalleryHorizontal className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {filteredPortfolio.length === 0 && (
+            <div className="text-center py-16">
+              <Image className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">Tidak ada portfolio yang ditemukan</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 bg-gradient-to-br from-pink-50 to-purple-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Apa Kata Klien Kami</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Dengarkan pengalaman pasangan-pasangan yang telah mempercayakan pernikahan mereka kepada Hapsah Wedding Organizer.
+            </p>
+          </div>
+          
+          {/* Featured Testimonials */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            {featuredTestimonials.map((testimonial) => (
+              <div key={testimonial.id} className="bg-white rounded-2xl shadow-lg p-8 relative">
+                <div className="absolute -top-4 -left-4 bg-rose-600 text-white p-3 rounded-full">
+                  <Heart className="h-6 w-6" />
+                </div>
+                <div className="pt-6">
+                  <div className="flex mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-gray-600 mb-6 italic">"{testimonial.text}"</p>
+                  <div className="flex items-center">
+                    <img 
+                      src={testimonial.image} 
+                      alt={testimonial.name}
+                      className="w-12 h-12 rounded-full mr-4"
+                    />
+                    <div>
+                      <div className="font-semibold text-gray-800">{testimonial.name}</div>
+                      <div className="text-sm text-gray-500">{testimonial.location}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* All Testimonials */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {testimonials.filter(t => !t.featured).map((testimonial) => (
+              <div key={testimonial.id} className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="flex items-start space-x-4">
+                  <img 
+                    src={testimonial.image} 
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full"
+                  />
+                  <div className="flex-1">
+                    <div className="flex mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`h-4 w-4 ${i < testimonial.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                      ))}
+                    </div>
+                    <p className="text-gray-600 text-sm mb-3">"{testimonial.text}"</p>
+                    <div>
+                      <div className="font-semibold text-gray-800">{testimonial.name}</div>
+                      <div className="text-sm text-gray-500">{testimonial.location}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">Hubungi Kami</h2>
+              <p className="text-lg text-gray-600 mb-8">
+                Siap untuk mewujudkan pernikahan impian Anda? Tim kami siap membantu Anda dengan konsultasi gratis.
+              </p>
+              
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <div className="bg-rose-100 p-3 rounded-full text-rose-600">
+                    <Phone className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800">Telepon</h3>
+                    <p className="text-gray-600">+62 812 3456 7890</p>
+                    <p className="text-sm text-gray-500">Senin - Sabtu, 09:00 - 17:00</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="bg-rose-100 p-3 rounded-full text-rose-600">
+                    <Mail className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800">Email</h3>
+                    <p className="text-gray-600">info@hapsahwedding.com</p>
+                    <p className="text-sm text-gray-500">Respons dalam 24 jam</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="bg-rose-100 p-3 rounded-full text-rose-600">
+                    <MapPin className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800">Alamat</h3>
+                    <p className="text-gray-600">Jl. Wedding Avenue No. 123, Jakarta, Indonesia</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="bg-rose-100 p-3 rounded-full text-rose-600">
+                    <Clock className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800">Jam Operasional</h3>
+                    <p className="text-gray-600">Senin - Sabtu: 09:00 - 17:00</p>
+                    <p className="text-gray-600">Minggu: 10:00 - 15:00 (by appointment)</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-8">
+                <h3 className="font-semibold text-gray-800 mb-4">Ikuti Kami</h3>
+                <div className="flex space-x-4">
+                  <a href="#" className="bg-rose-600 hover:bg-rose-700 text-white p-3 rounded-full transition-colors">
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="bg-rose-600 hover:bg-rose-700 text-white p-3 rounded-full transition-colors">
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="bg-rose-600 hover:bg-rose-700 text-white p-3 rounded-full transition-colors">
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="bg-rose-600 hover:bg-rose-700 text-white p-3 rounded-full transition-colors">
+                    <MessageCircle className="h-5 w-5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6">Formulir Konsultasi</h3>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                    placeholder="Masukkan nama Anda"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      placeholder="Masukkan email Anda"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Telepon *</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      placeholder="Masukkan nomor telepon"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal Acara *</label>
+                    <input
+                      type="date"
+                      name="eventDate"
+                      value={formData.eventDate}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Jumlah Tamu *</label>
+                    <select
+                      name="guests"
+                      value={formData.guests}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                    >
+                      <option value="">Pilih jumlah tamu</option>
+                      <option value="50-100">50 - 100 tamu</option>
+                      <option value="100-200">100 - 200 tamu</option>
+                      <option value="200-300">200 - 300 tamu</option>
+                      <option value="300+">300+ tamu</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Anggaran Perkiraan</label>
+                  <select
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  >
+                    <option value="">Pilih perkiraan anggaran</option>
+                    <option value="50-100">Rp 50 - 100 juta</option>
+                    <option value="100-200">Rp 100 - 200 juta</option>
+                    <option value="200-300">Rp 200 - 300 juta</option>
+                    <option value="300-500">Rp 300 - 500 juta</option>
+                    <option value="500+">Rp 500 juta+</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Tema Pernikahan</label>
+                  <select
+                    name="theme"
+                    value={formData.theme}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  >
+                    <option value="">Pilih tema (opsional)</option>
+                    <option value="garden">Garden Wedding</option>
+                    <option value="beach">Beach Wedding</option>
+                    <option value="luxury">Luxury Ballroom</option>
+                    <option value="rustic">Rustic Chic</option>
+                    <option value="traditional">Traditional</option>
+                    <option value="minimalist">Minimalist Elegance</option>
+                    <option value="other">Lainnya</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Pesan/Pertanyaan</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                    placeholder="Ceritakan tentang pernikahan impian Anda..."
+                  ></textarea>
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
+                >
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Mengirim...
+                    </>
+                  ) : (
+                    'Kirim Pesan'
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4">
+            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={() => setShowSuccessModal(false)}></div>
+            
+            <div className="relative bg-white rounded-2xl max-w-md w-full p-8 text-center transform transition-all">
+              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Check className="h-8 w-8 text-green-600" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Terima Kasih!</h3>
+              <p className="text-gray-600 mb-6">
+                Pesan Anda telah berhasil dikirim. Tim kami akan segera menghubungi Anda dalam waktu 24 jam.
+              </p>
+              
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-full font-semibold transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Service Detail Modal */}
+      {selectedService && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4">
+            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={() => setSelectedService(null)}></div>
+            
+            <div className="relative bg-white rounded-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
+              <div className="p-8">
+                <div className="flex justify-between items-start mb-6">
+                  <h2 className="text-3xl font-bold text-gray-800">{selectedService.title}</h2>
+                  <button 
+                    onClick={() => setSelectedService(null)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                  <img 
+                    src={selectedService.image} 
+                    alt={selectedService.title}
+                    className="w-full h-64 object-cover rounded-xl"
+                  />
+                  
+                  <div>
+                    <p className="text-gray-600 mb-6">{selectedService.description}</p>
+                    <div className="text-3xl font-bold text-rose-600 mb-6">{selectedService.priceDisplay}</div>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-4">Fitur Utama:</h4>
+                    <ul className="space-y-2 mb-6">
+                      {selectedService.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-center text-gray-600">
+                          <Check className="h-5 w-5 text-rose-600 mr-3" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-4">Keuntungan:</h4>
+                    <ul className="space-y-2">
+                      {selectedService.benefits.map((benefit, idx) => (
+                        <li key={idx} className="flex items-center text-gray-600">
+                          <Sparkles className="h-5 w-5 text-rose-600 mr-3" />
+                          {benefit}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-4">
+                  <button 
+                    onClick={() => {
+                      addToCart(selectedService);
+                      setSelectedService(null);
+                    }}
+                    className="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-full font-semibold transition-colors"
+                  >
+                    Tambah ke Keranjang
+                  </button>
+                  <button 
+                    onClick={() => setSelectedService(null)}
+                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-full font-semibold transition-colors"
+                  >
+                    Tutup
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Gallery Modal */}
+      {selectedGallery && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4">
+            <div className="fixed inset-0 bg-black bg-opacity-90 transition-opacity" onClick={() => setSelectedGallery(null)}></div>
+            
+            <div className="relative max-w-4xl w-full">
+              <div className="flex justify-between items-center p-4 absolute top-0 left-0 right-0 z-10">
+                <h3 className="text-white text-xl font-bold">{selectedGallery.title}</h3>
+                <button 
+                  onClick={() => setSelectedGallery(null)}
+                  className="text-white hover:text-gray-300"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <div className="relative">
+                <img 
+                  src={selectedGallery.images[0]} 
+                  alt={selectedGallery.title}
+                  className="w-full h-auto rounded-lg"
+                />
+              </div>
+              
+              <div className="absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-4 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-bold">{selectedGallery.location}</h4>
+                    <p>{selectedGallery.guests} Tamu • {selectedGallery.budget}</p>
+                  </div>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`h-5 w-5 ${i < selectedGallery.rating ? 'text-yellow-400 fill-current' : 'text-gray-400'}`} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="text-rose-400">
+                  <Heart className="h-8 w-8" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold">Hapsah</h3>
+                  <p className="text-gray-300">Wedding Organizer</p>
+                </div>
+              </div>
+              <p className="text-gray-300 mb-6 leading-relaxed">
+                Mewujudkan pernikahan impian Anda dengan sentuhan personal, kreativitas tanpa batas, 
+                dan detail sempurna yang tak terlupakan.
+              </p>
+              <div className="flex space-x-4">
+                <a href="#" className="bg-rose-600 hover:bg-rose-700 text-white p-2 rounded-full transition-colors">
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a href="#" className="bg-rose-600 hover:bg-rose-700 text-white p-2 rounded-full transition-colors">
+                  <Facebook className="h-5 w-5" />
+                </a>
+                <a href="#" className="bg-rose-600 hover:bg-rose-700 text-white p-2 rounded-full transition-colors">
+                  <Twitter className="h-5 w-5" />
+                </a>
+                <a href="#" className="bg-rose-600 hover:bg-rose-700 text-white p-2 rounded-full transition-colors">
+                  <MessageCircle className="h-5 w-5" />
+                </a>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Layanan</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Full Wedding Planning</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Partial Planning</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Day-of Coordination</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Vendor Management</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Theme & Decor</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Wedding Stationery</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Informasi</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Tentang Kami</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Portfolio</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Testimoni</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">FAQ</a></li>
+                <li><a href="#" className="hover:text-rose-400 transition-colors">Karir</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-700 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="text-gray-400 text-sm mb-4 md:mb-0">
+                &copy; 2024 Hapsah Wedding Organizer. All rights reserved.
+              </div>
+              <div className="flex space-x-6 text-sm text-gray-400">
+                <a href="#" className="hover:text-rose-400 transition-colors">Kebijakan Privasi</a>
+                <a href="#" className="hover:text-rose-400 transition-colors">Syarat & Ketentuan</a>
+                <a href="#" className="hover:text-rose-400 transition-colors">Peta Situs</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Back to top button */}
+      <button 
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-8 right-8 bg-rose-600 hover:bg-rose-700 text-white p-3 rounded-full shadow-lg transition-colors z-40"
+      >
+        <ChevronLeft className="h-6 w-6 rotate-90" />
+      </button>
+    </div>
+  );
+};
+
+export default App;
+```
